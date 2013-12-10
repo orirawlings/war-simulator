@@ -90,4 +90,9 @@ if (handA.length < 1) {
 } else if (handB.length < 1) {
     stats.winner = "Player A";
 }
+for (var i = 0; i < stats.warCounts.length; i++) {
+    if (stats.warCounts[i] == undefined) {
+        stats.warCounts[i] = 0;
+    }
+}
 console.log('%j', stats);
