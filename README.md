@@ -1,7 +1,7 @@
 war-simulator
 =============
 
-Simulator for the card game War
+Simulator for the card game War http://en.wikipedia.org/wiki/War_(card_game)
 
 To simulate a random game of War simply execute:
 
