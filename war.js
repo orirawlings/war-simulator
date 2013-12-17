@@ -61,72 +61,78 @@ Hand.prototype.peek = function () {
     }
 }
 
-var deck = card.newDeck();
+if (process.argv.length == 3) {
+    var runs = parseInt(process.argv[2]);
+} else {
+    var runs = 1;
+}
 
-var handA = dealRandomCardsFromDeck(26, deck);
-var handB = dealRandomCardsFromDeck(26, deck);
+for (var n = 0; n < runs; n++) {
+    var deck = card.newDeck();
+    var handA = dealRandomCardsFromDeck(26, deck);
+    var handB = dealRandomCardsFromDeck(26, deck);
+    assert.equal(handA.length, 26);
+    assert.equal(handB.length, 26);
 
-assert.equal(handA.length, 26);
-assert.equal(handB.length, 26);
-
-var table = new Hand(52);
-var faceDown = 0;
-var stats = {
-    battles : 0,
-    warCounts : []
-};
-var currentWarStreak = 0;
-while (handA.length >= 1 && handB.length >= 1) {
-    if (faceDown > 0) {
-        var cardA = handA.shift();
-        var cardB = handB.shift();
-//        console.log("Player A submits %s face down on the table. Player B submits %s face down on the table.", cardA, cardB);
-        table.push(cardA);
-        table.push(cardB);
-        faceDown--;
-    } else if (handA.peek().value > handB.peek().value) {
-//        console.log("Player A's %s defeats Player B's %s", handA[0], handB[0]);
-        stats.battles++;
-        if (stats.warCounts[currentWarStreak] == undefined) {
-            stats.warCounts[currentWarStreak] = 0;
+    var table = new Hand(52);
+    var faceDown = 0;
+    var stats = {
+        battles : 0,
+        warCounts : []
+    };
+    var currentWarStreak = 0;
+    while (handA.length >= 1 && handB.length >= 1) {
+        if (faceDown > 0) {
+            var cardA = handA.shift();
+            var cardB = handB.shift();
+    //        console.log("Player A submits %s face down on the table. Player B submits %s face down on the table.", cardA, cardB);
+            table.push(cardA);
+            table.push(cardB);
+            faceDown--;
+        } else if (handA.peek().value > handB.peek().value) {
+    //        console.log("Player A's %s defeats Player B's %s", handA[0], handB[0]);
+            stats.battles++;
+            if (stats.warCounts[currentWarStreak] == undefined) {
+                stats.warCounts[currentWarStreak] = 0;
+            }
+            stats.warCounts[currentWarStreak]++;
+            currentWarStreak = 0;
+            for (var j = 0; j < table.length; j++) {
+                handA.push(table.shift());
+            }
+            handA.push(handA.shift());
+            handA.push(handB.shift());
+        } else if (handA.peek().value < handB.peek().value) {
+    //        console.log("Player A's %s is defeated by Player B's %s", handA[0], handB[0]);
+            stats.battles++;
+            if (stats.warCounts[currentWarStreak] == undefined) {
+                stats.warCounts[currentWarStreak] = 0;
+            }
+            stats.warCounts[currentWarStreak]++;
+            currentWarStreak = 0;
+            for (var j = 0; j < table.length; j++) {
+                handB.push(table.shift());
+            }
+            handB.push(handB.shift());
+            handB.push(handA.shift());
+        } else if (handA.peek().value == handB.peek().value) {
+    //        console.log("Player A's %s ties Player B's %s", handA[0], handB[0]); 
+            stats.battles++;
+            currentWarStreak++;
+            table.push(handA.shift());
+            table.push(handB.shift());
+            faceDown = 3;
         }
-        stats.warCounts[currentWarStreak]++;
-        currentWarStreak = 0;
-        for (var j = 0; j < table.length; j++) {
-            handA.push(table.shift());
-        }
-        handA.push(handA.shift());
-        handA.push(handB.shift());
-    } else if (handA.peek().value < handB.peek().value) {
-//        console.log("Player A's %s is defeated by Player B's %s", handA[0], handB[0]);
-        stats.battles++;
-        if (stats.warCounts[currentWarStreak] == undefined) {
-            stats.warCounts[currentWarStreak] = 0;
-        }
-        stats.warCounts[currentWarStreak]++;
-        currentWarStreak = 0;
-        for (var j = 0; j < table.length; j++) {
-            handB.push(table.shift());
-        }
-        handB.push(handB.shift());
-        handB.push(handA.shift());
-    } else if (handA.peek().value == handB.peek().value) {
-//        console.log("Player A's %s ties Player B's %s", handA[0], handB[0]); 
-        stats.battles++;
-        currentWarStreak++;
-        table.push(handA.shift());
-        table.push(handB.shift());
-        faceDown = 3;
     }
-}
-if (handA.length < 1) {
-    stats.winner = "Player B";
-} else if (handB.length < 1) {
-    stats.winner = "Player A";
-}
-for (var i = 0; i < stats.warCounts.length; i++) {
-    if (stats.warCounts[i] == undefined) {
-        stats.warCounts[i] = 0;
+    if (handA.length < 1) {
+        stats.winner = "Player B";
+    } else if (handB.length < 1) {
+        stats.winner = "Player A";
     }
+    for (var i = 0; i < stats.warCounts.length; i++) {
+        if (stats.warCounts[i] == undefined) {
+            stats.warCounts[i] = 0;
+        }
+    }
+    console.log('%j', stats);
 }
-console.log('%j', stats);

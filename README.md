@@ -9,8 +9,8 @@ To simulate a random game of War simply execute:
   
 This will output a JSON document describing statistic information about the game.
 
-To simulate many games use the collectData.sh script:
+To simulate many games simply pass a command line argument:
 
-    ./collectData.js 1000
+    node war.js 1000
   
 This will output a JSON document for each of 1000 random games. This output can then be aggregated for further analyses.
