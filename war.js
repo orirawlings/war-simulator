@@ -74,7 +74,8 @@ for (var n = 0; n < runs; n++) {
     assert.equal(handA.length, 26);
     assert.equal(handB.length, 26);
 
-    var table = new Hand(52);
+    var playerACardsOnTable = new Hand(26);
+    var playerBCardsOnTable = new Hand(26);
     var faceDown = 0;
     var stats = {
         battles : 0,
@@ -86,8 +87,8 @@ for (var n = 0; n < runs; n++) {
             var cardA = handA.shift();
             var cardB = handB.shift();
     //        console.log("Player A submits %s face down on the table. Player B submits %s face down on the table.", cardA, cardB);
-            table.push(cardA);
-            table.push(cardB);
+            playerACardsOnTable.push(cardA);
+            playerBCardsOnTable.push(cardB);
             faceDown--;
         } else if (handA.peek().value > handB.peek().value) {
     //        console.log("Player A's %s defeats Player B's %s", handA[0], handB[0]);
@@ -97,8 +98,9 @@ for (var n = 0; n < runs; n++) {
             }
             stats.warCounts[currentWarStreak]++;
             currentWarStreak = 0;
-            for (var j = 0; j < table.length; j++) {
-                handA.push(table.shift());
+            for (var j = 0; j < playerACardsOnTable.length; j++) {
+                handA.push(playerACardsOnTable.shift());
+                handA.push(playerBCardsOnTable.shift());
             }
             handA.push(handA.shift());
             handA.push(handB.shift());
@@ -110,8 +112,9 @@ for (var n = 0; n < runs; n++) {
             }
             stats.warCounts[currentWarStreak]++;
             currentWarStreak = 0;
-            for (var j = 0; j < table.length; j++) {
-                handB.push(table.shift());
+            for (var j = 0; j < playerBCardsOnTable.length; j++) {
+                handB.push(playerBCardsOnTable.shift());
+                handB.push(playerACardsOnTable.shift());
             }
             handB.push(handB.shift());
             handB.push(handA.shift());
@@ -119,8 +122,8 @@ for (var n = 0; n < runs; n++) {
     //        console.log("Player A's %s ties Player B's %s", handA[0], handB[0]); 
             stats.battles++;
             currentWarStreak++;
-            table.push(handA.shift());
-            table.push(handB.shift());
+            playerACardsOnTable.push(handA.shift());
+            playerBCardsOnTable.push(handB.shift());
             faceDown = 3;
         }
     }
