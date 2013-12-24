@@ -61,13 +61,8 @@ Hand.prototype.peek = function () {
     }
 }
 
-if (process.argv.length == 3) {
-    var runs = parseInt(process.argv[2]);
-} else {
-    var runs = 1;
-}
-
-for (var n = 0; n < runs; n++) {
+var simulateMatch = function () {
+    var start = process.hrtime();
     var deck = card.newDeck();
     var handA = dealRandomCardsFromDeck(26, deck);
     var handB = dealRandomCardsFromDeck(26, deck);
@@ -137,5 +132,17 @@ for (var n = 0; n < runs; n++) {
             stats.warCounts[i] = 0;
         }
     }
-    console.log('%j', stats);
+    var duration = process.hrtime(start);
+    stats.timeInNanos = duration[0] * 1000000000 + duration[1];
+    return stats;
+}
+
+if (process.argv.length == 3) {
+    var runs = parseInt(process.argv[2]);
+} else {
+    var runs = 1;
+}
+
+for (var n = 0; n < runs; n++) {
+    console.log('%j', simulateMatch());
 }
