@@ -25,10 +25,10 @@ var Card = function (value, suit) {
     }
     this.value = Number(value);
     this.suit = suit;
-    this.toString = function () {
-        return values[this.value] + ' of ' + this.suit;
-    }
 };
+Card.prototype.toString = function () {
+    return values[this.value] + ' of ' + this.suit;
+}
 
 var newDeck = function () {
     var result = [];
