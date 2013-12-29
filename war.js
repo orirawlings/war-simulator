@@ -18,13 +18,47 @@ var dealRandomCardsFromDeck = function (n, deck) {
     if (n > deck.length) {
         throw "Not enough cards in deck to deal " + n + " cards. Deck only has " + deck.length + " cards.";
     }
-    var hand = [];
+    var hand = new Hand(52);
     for (var i = 0; i < n; i++) {
         var j = Math.floor(Math.random() * deck.length);
         var card = removeCardFromDeck(j, deck);
         hand.push(card);
     }
     return hand;
+}
+
+var Hand = function (maxSize) {
+    this.queue = new Array(maxSize);
+    this.head = 0;
+    this.end = 0;
+    this.length = 0;
+}
+Hand.prototype.push = function (card) {
+    if (this.length < this.queue.length) {
+        this.queue[this.end] = card;
+        this.length++;
+        this.end = (this.end + 1) % this.queue.length
+    } else {
+        throw "Hand has already reached max size [" + this.length + "]. Cannot push new card to hand."
+    }
+}
+Hand.prototype.shift = function () {
+    if (this.length > 0) {
+        var card = this.queue[this.head];
+        this.length--;
+        this.head = (this.head + 1) % this.queue.length;
+        return card;
+    } else {
+        throw "Hand has no cards to return."
+    }
+}
+Hand.prototype.peek = function () {
+    if (this.length > 0) {
+        var card = this.queue[this.head];
+        return card;
+    } else {
+        throw "Hand has no cards to show."
+    }
 }
 
 var simulateMatch = function () {
@@ -35,8 +69,8 @@ var simulateMatch = function () {
     assert.equal(handA.length, 26);
     assert.equal(handB.length, 26);
 
-    var playerACardsOnTable = [];
-    var playerBCardsOnTable = [];
+    var playerACardsOnTable = new Hand(26);
+    var playerBCardsOnTable = new Hand(26);
     var faceDown = 0;
     var stats = {
         battles : 0,
@@ -51,7 +85,7 @@ var simulateMatch = function () {
             playerACardsOnTable.push(cardA);
             playerBCardsOnTable.push(cardB);
             faceDown--;
-        } else if (handA[0].value > handB[0].value) {
+        } else if (handA.peek().value > handB.peek().value) {
     //        console.log("Player A's %s defeats Player B's %s", handA[0], handB[0]);
             stats.battles++;
             if (stats.warCounts[currentWarStreak] == undefined) {
@@ -65,7 +99,7 @@ var simulateMatch = function () {
             }
             handA.push(handA.shift());
             handA.push(handB.shift());
-        } else if (handA[0].value < handB[0].value) {
+        } else if (handA.peek().value < handB.peek().value) {
     //        console.log("Player A's %s is defeated by Player B's %s", handA[0], handB[0]);
             stats.battles++;
             if (stats.warCounts[currentWarStreak] == undefined) {
@@ -79,7 +113,7 @@ var simulateMatch = function () {
             }
             handB.push(handB.shift());
             handB.push(handA.shift());
-        } else if (handA[0].value == handB[0].value) {
+        } else if (handA.peek().value == handB.peek().value) {
     //        console.log("Player A's %s ties Player B's %s", handA[0], handB[0]); 
             stats.battles++;
             currentWarStreak++;
