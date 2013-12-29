@@ -30,14 +30,15 @@ Card.prototype.toString = function () {
     return values[this.value] + ' of ' + this.suit;
 }
 
-var newDeck = function () {
-    var result = [];
-    for (var s in suits) {
-        for (var v in values) {
-            result.push(new Card(v, suits[s]));
-        }
+var deck = [];
+for (var s in suits) {
+    for (var v in values) {
+        deck.push(new Card(v, suits[s]));
     }
-    return result;
+}
+
+var newDeck = function () {
+    return deck.slice(0);
 };
 
 var testCard = new Card(5, 'clubs');
