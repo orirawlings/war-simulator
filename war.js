@@ -1,32 +1,6 @@
 var assert = require('assert');
 var card = require('./card');
 
-var removeCardFromDeck = function (i, deck) {
-    if (i > deck.length-1) {
-        throw "Not enough cards in deck to remove card at index " + i + ". Only " + deck.length + " cards in deck."
-    }
-    var card = deck[i];
-    // Shift remaining cards and reduce size of the deck
-    for (var j = i; j < deck.length-1; j++) {
-        deck[j] = deck[j+1];
-    }
-    deck.pop();
-    return card;
-}
-
-var dealRandomCardsFromDeck = function (n, deck) {
-    if (n > deck.length) {
-        throw "Not enough cards in deck to deal " + n + " cards. Deck only has " + deck.length + " cards.";
-    }
-    var hand = new Hand(52);
-    for (var i = 0; i < n; i++) {
-        var j = Math.floor(Math.random() * deck.length);
-        var card = removeCardFromDeck(j, deck);
-        hand.push(card);
-    }
-    return hand;
-}
-
 var Hand = function (maxSize) {
     this.queue = new Array(maxSize);
     this.head = 0;
@@ -61,11 +35,33 @@ Hand.prototype.peek = function () {
     }
 }
 
+var shuffle = function (deck) {
+    for (var j = 0; j < deck.length; j++) {
+        var k = Math.floor(Math.random() * (deck.length-j)) + j;
+        var temp = deck[j];
+        deck[j] = deck[k];
+        deck[k] = temp;
+    }
+    return deck;
+}
+
+var dealNHands = function (n, deck) {
+    var hands = new Array(n);
+    for (var j = 0; j < n; j++) {
+        hands[j] = new Hand(deck.length);
+    }
+    for (var i = 0; i < deck.length; i++) {
+        hands[i%n].push(deck[i]);
+    }
+    return hands;
+}
+
 var simulateMatch = function () {
     var start = process.hrtime();
     var deck = card.newDeck();
-    var handA = dealRandomCardsFromDeck(26, deck);
-    var handB = dealRandomCardsFromDeck(26, deck);
+    var hands = dealNHands(2, shuffle(deck));
+    var handA = hands[0];
+    var handB = hands[1];
     assert.equal(handA.length, 26);
     assert.equal(handB.length, 26);
 
