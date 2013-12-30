@@ -71,22 +71,14 @@ var simulateMatch = function () {
 
     var playerACardsOnTable = new Hand(26);
     var playerBCardsOnTable = new Hand(26);
-    var faceDown = 0;
     var stats = {
         battles : 0,
         warCounts : []
     };
     var currentWarStreak = 0;
     while (handA.length >= 1 && handB.length >= 1) {
-        if (faceDown > 0) {
-            var cardA = handA.shift();
-            var cardB = handB.shift();
-    //        console.log("Player A submits %s face down on the table. Player B submits %s face down on the table.", cardA, cardB);
-            playerACardsOnTable.push(cardA);
-            playerBCardsOnTable.push(cardB);
-            faceDown--;
-        } else if (handA.peek().value > handB.peek().value) {
-    //        console.log("Player A's %s defeats Player B's %s", handA[0], handB[0]);
+        if (handA.peek().value > handB.peek().value) {
+//            console.log("Player A's %s defeats Player B's %s", handA[0], handB[0]);
             stats.battles++;
             if (stats.warCounts[currentWarStreak] == undefined) {
                 stats.warCounts[currentWarStreak] = 0;
@@ -100,7 +92,7 @@ var simulateMatch = function () {
             handA.push(handA.shift());
             handA.push(handB.shift());
         } else if (handA.peek().value < handB.peek().value) {
-    //        console.log("Player A's %s is defeated by Player B's %s", handA[0], handB[0]);
+//            console.log("Player A's %s is defeated by Player B's %s", handA[0], handB[0]);
             stats.battles++;
             if (stats.warCounts[currentWarStreak] == undefined) {
                 stats.warCounts[currentWarStreak] = 0;
@@ -114,12 +106,18 @@ var simulateMatch = function () {
             handB.push(handB.shift());
             handB.push(handA.shift());
         } else if (handA.peek().value == handB.peek().value) {
-    //        console.log("Player A's %s ties Player B's %s", handA[0], handB[0]); 
+//            console.log("Player A's %s ties Player B's %s", handA[0], handB[0]); 
             stats.battles++;
             currentWarStreak++;
             playerACardsOnTable.push(handA.shift());
             playerBCardsOnTable.push(handB.shift());
-            faceDown = 3;
+            for (var j = 0; j < 3 && handA.length >= 1 && handB.length >= 1; j++) {
+                var cardA = handA.shift();
+                var cardB = handB.shift();
+//              console.log("Player A submits %s face down on the table. Player B submits %s face down on the table.", cardA, cardB);
+                playerACardsOnTable.push(cardA);
+                playerBCardsOnTable.push(cardB);
+            }
         }
     }
     if (handA.length < 1) {
