@@ -34,6 +34,11 @@ Hand.prototype.peek = function () {
         throw "Hand has no cards to show."
     }
 }
+Hand.prototype.clear = function () {
+    this.head = 0;
+    this.end = 0;
+    this.length = 0;
+}
 
 var shuffle = function (deck) {
     for (var j = 0; j < deck.length; j++) {
@@ -45,23 +50,20 @@ var shuffle = function (deck) {
     return deck;
 }
 
-var dealNHands = function (n, deck) {
-    var hands = new Array(n);
-    for (var j = 0; j < n; j++) {
-        hands[j] = new Hand(deck.length);
-    }
+var dealHands = function (hands, deck) {
     for (var i = 0; i < deck.length; i++) {
-        hands[i%n].push(deck[i]);
+        hands[i%hands.length].push(deck[i]);
     }
     return hands;
 }
 
+var gameHands = [new Hand(52), new Hand(52)];
 var simulateMatch = function () {
     var start = process.hrtime();
     var deck = card.newDeck();
-    var hands = dealNHands(2, shuffle(deck));
-    var handA = hands[0];
-    var handB = hands[1];
+    gameHands = dealHands(gameHands, shuffle(deck));
+    var handA = gameHands[0];
+    var handB = gameHands[1];
     assert.equal(handA.length, 26);
     assert.equal(handB.length, 26);
 
@@ -121,6 +123,8 @@ var simulateMatch = function () {
     } else if (handB.length < 1) {
         stats.winner = "Player A";
     }
+    handA.clear();
+    handB.clear();
     for (var i = 0; i < stats.warCounts.length; i++) {
         if (stats.warCounts[i] == undefined) {
             stats.warCounts[i] = 0;
